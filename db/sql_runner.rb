@@ -4,14 +4,15 @@ require('pg')
 class SqlRunner
 
 
-  def run(sql, values = [])
+  def self.run(sql, values = [])
     begin
-      db = PG.connect(dbname: 'codeclan_cinema.sql', host: 'localhost')
+      db = PG.connect(dbname: 'codeclan_cinema', host: 'localhost')
       db.prepare("run", sql)
-      result = db.exec_prepare(sql, values)
+      result = db.exec_prepared("run", values)
     ensure
       db.close()
     end
+    binding.pry
     return result
   end
 
