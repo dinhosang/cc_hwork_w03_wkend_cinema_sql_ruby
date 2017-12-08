@@ -58,16 +58,22 @@ class Customer
   end
 
 
-  def purchase_ticket(film)
+  def purchase_ticket(film, time)
     cost = film.price
     if cost <= funds
-      ticket = Ticket.new({
-        'customer_id' => @id,
-        'film_id' => film.id
-        })
-      ticket.save()
-      @funds -= cost
-      return ticket
+      if film.availability?
+        ticket = Ticket.new({
+          'customer_id' => @id,
+          'film_id' => film.id,
+          'film_time' => time
+          })
+        ticket.save()
+        @funds -= cost
+        update()
+        return ticket
+      else
+        return "Sorry, it's booked up"
+      end
     end
     return "Sorry, not enough funds"
   end

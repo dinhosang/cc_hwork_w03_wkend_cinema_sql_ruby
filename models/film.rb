@@ -4,13 +4,15 @@ require_relative('customer')
 
 class Film
 
-  attr_reader :id
+  attr_reader :id, :screen_limit
   attr_accessor :title, :price
 
   def initialize(options_hash)
     @id = options_hash['id'].to_i if options_hash['id']
     @title = options_hash['title']
     @price = options_hash['price'].to_i
+    @times = options_hash['times']
+    @screen_limit = 3
   end
 
 
@@ -23,9 +25,39 @@ class Film
     values = [@title, @price]
     id_hash = SqlRunner.run(sql, values).first
     @id = id_hash['id'].to_i
+    save_times()
   end
 
 
+  def availability?()
+    sql = "
+    SELECT COUNT(*) FROM tickets WHERE tickets.film_id = $1 GROUP BY tickets.film_id
+    "
+    bookings_hash = SqlRunner.run(sql, [@id]).first
+    if bookings_hash == nil
+      return true
+    elsif bookings = bookings_hash['count'].to_i
+      if bookings >= @screen_limit
+        return false
+      else
+        return true
+      end
+    end
+  end
+
+
+  def save_times()
+    for time in @times
+      sql = "
+      INSERT INTO screenings (film_id, film_time)
+      VALUES ($1, $2);
+      "
+      values = [@id, time]
+      SqlRunner.run(sql, values)
+    end
+  end
+
+# need to rework to go with new times
   def update()
     sql = "
     UPDATE films
@@ -65,6 +97,34 @@ class Film
     "
     count_hash = SqlRunner.run(sql, [@id])[0]
     return count_hash['count'].to_i
+  end
+
+
+  def busiest_time()
+    sql = "
+    SELECT screenings.film_time, count(*)
+    FROM screenings
+    INNER JOIN tickets
+    ON tickets.screening_id = screenings.id
+    WHERE screenings.film_id = $1 GROUP BY screenings.film_time
+    ORDER BY count DESC;
+    "
+    count_of_times = SqlRunner.run(sql, [@id])
+    most_popular_times = []
+    current_most_popular_count = 0
+    for count in count_of_times
+      if current_most_popular_count == 0
+        most_popular_times.push(count['film_time'])
+        current_most_popular_count = count['count'].to_i
+      elsif count['count'].to_i == current_most_popular_count
+        most_popular_times.push(count['film_time'])
+      elsif count['count'].to_i > current_most_popular_count
+        most_popular_times = []
+        most_popular_times.push(count['film_time'])
+        current_most_popular_count = count['count'].to_i
+      end
+    end
+    return most_popular_times
   end
 
 
