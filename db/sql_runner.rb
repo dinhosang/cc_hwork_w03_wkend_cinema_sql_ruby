@@ -12,7 +12,6 @@ class SqlRunner
     ensure
       db.close()
     end
-    binding.pry
     return result
   end
 
