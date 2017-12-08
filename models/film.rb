@@ -58,6 +58,16 @@ class Film
   end
 
 
+  def customer_count()
+    sql = "
+    SELECT COUNT(*) FROM tickets
+    WHERE tickets.film_id = $1;
+    "
+    count_hash = SqlRunner.run(sql, [@id])[0]
+    return count_hash['count'].to_i
+  end
+
+
   def Film.mapper(f_hashes)
     films = f_hashes.map do |f_hash|
       Film.new(f_hash)

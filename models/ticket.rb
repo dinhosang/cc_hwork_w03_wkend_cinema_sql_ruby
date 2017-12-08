@@ -42,6 +42,14 @@ class Ticket
   end
 
 
+  def Ticket.mapper(t_hashes)
+    tickets = t_hashes.map do |t_hash|
+      Ticket.new(t_hash)
+    end
+    return tickets
+  end
+
+
   def Ticket.delete_all()
     sql = "DELETE FROM tickets;"
     SqlRunner.run(sql)

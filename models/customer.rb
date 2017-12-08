@@ -73,6 +73,16 @@ class Customer
   end
 
 
+  def ticket_count()
+    sql = "
+    SELECT COUNT(*) FROM tickets
+    WHERE tickets.customer_id = $1;
+    "
+    count_hash = SqlRunner.run(sql, [@id])[0]
+    return count_hash['count'].to_i
+  end
+
+
   def Customer.mapper(c_hashes)
     customers = c_hashes.map do |c_hash|
       Customer.new(c_hash)
