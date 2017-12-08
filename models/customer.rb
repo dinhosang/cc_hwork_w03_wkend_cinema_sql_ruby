@@ -1,5 +1,6 @@
 require_relative('../db/sql_runner')
 require_relative('film')
+require_relative('ticket')
 
 
 class Customer
@@ -54,6 +55,21 @@ class Customer
     "
     film_hashes = SqlRunner.run(sql, [@id])
     return Film.mapper(film_hashes)
+  end
+
+
+  def purchase_ticket(film)
+    cost = film.price
+    if cost <= funds
+      ticket = Ticket.new({
+        'customer_id' => @id,
+        'film_id' => film.id
+        })
+      ticket.save()
+      @funds -= cost
+      return ticket
+    end
+    return "Sorry, not enough funds"
   end
 
 

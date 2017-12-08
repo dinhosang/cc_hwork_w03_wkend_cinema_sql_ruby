@@ -18,7 +18,7 @@ film1 = Film.new({'title' => 'Zoro the real movie', 'price' => 15})
 film1.save()
 film2 = Film.new({'title' => 'Pokemon the Movie', 'price' => 30})
 film2.save()
-film3 = Film.new({'title' => 'Digimon', 'price' => 50})
+film3 = Film.new({'title' => 'Digimon', 'price' => 200})
 film3.save()
 
 
@@ -30,14 +30,16 @@ ticket3 = Ticket.new({'customer_id' => customer2.id, 'film_id' => film2.id})
 ticket3.save
 ticket4 = Ticket.new({'customer_id' => customer1.id, 'film_id' => film2.id})
 ticket4.save
-ticket5 = Ticket.new({'customer_id' => customer1.id, 'film_id' => film3.id})
-ticket5.save
 
-binding.pry
+# binding.pry
 
 
 customer1.funds = 233
 customer2.name = 'Jam'
+
+ticket5 = customer1.purchase_ticket(film3)
+ticket6 = customer1.purchase_ticket(film3)
+
 
 film2.price = 30
 film1.title = 'Zorro'
