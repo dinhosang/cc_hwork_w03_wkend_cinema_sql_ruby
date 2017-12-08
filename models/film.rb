@@ -1,4 +1,5 @@
 require_relative('../db/sql_runner')
+require_relative('customer')
 
 
 class Film
@@ -39,6 +40,29 @@ class Film
   def delete()
     sql = "DELETE FROM films WHERE id = $1;"
     SqlRunner.run(sql, [@id])
+  end
+
+
+  def customers()
+    sql = "
+    SELECT customers.* FROM customers
+    INNER JOIN tickets
+    ON customers.id = tickets.customer_id
+    INNER JOIN films
+    ON tickets.film_id = films.id
+    WHERE films.id = $1;
+    "
+    c_hashes = SqlRunner.run(sql, [@id])
+    customer_objects = Customer.mapper(c_hashes)
+    return customer_objects
+  end
+
+
+  def Film.mapper(f_hashes)
+    films = f_hashes.map do |f_hash|
+      Film.new(f_hash)
+    end
+    return films
   end
 
 
