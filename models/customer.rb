@@ -79,6 +79,17 @@ class Customer
   end
 
 
+  def change_ticket(ticket, options_hash)
+    result = ticket.update( options_hash )
+    binding.pry
+    if result.class == String
+      return result
+    else
+      return "Ticket modified"
+    end
+  end
+
+
   def ticket_count()
     sql = "
     SELECT COUNT(*) FROM tickets

@@ -4,7 +4,7 @@ require_relative('customer')
 
 class Film
 
-  attr_reader :id, :screen_limit
+  attr_reader :id, :screen_limit, :times
   attr_accessor :title, :price
 
   def initialize(options_hash)
@@ -36,12 +36,12 @@ class Film
     bookings_hash = SqlRunner.run(sql, [@id]).first
     if bookings_hash == nil
       return true
-    elsif bookings = bookings_hash['count'].to_i
-      if bookings >= @screen_limit
+    end
+    bookings = bookings_hash['count'].to_i
+    if bookings >= @screen_limit
         return false
-      else
-        return true
-      end
+    else
+      return true
     end
   end
 
